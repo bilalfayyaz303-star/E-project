@@ -1,295 +1,1053 @@
 <?php
+require_once('dashboard/config/db.php');
 
-session_start();
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+
+
+
 $currentScript = basename($_SERVER['PHP_SELF']);
-$headerClass = ($currentScript === 'index.php') ? 'header' : 'header header--normal';
+
+
+
+$artistsResult = false;
+
+$artistsQuery = "
+    SELECT id, artist_name
+    FROM artists
+    ORDER BY artist_name ASC
+";
+
+$artistsResult = mysqli_query($conn, $artistsQuery);
+
+
+
+$categoriesResult = false;
+
+$categoriesQuery = "
+    SELECT id, category_name
+    FROM categories
+    ORDER BY category_name ASC
+";
+
+$categoriesResult = mysqli_query($conn, $categoriesQuery);
+
+
+/* =========================================================
+   HEADER CLASS
+========================================================= */
+
+$headerClass = ($currentScript === 'index.php')
+    ? 'header'
+    : 'header header--normal';
+
 ?>
+
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="description" content="Sound Waves Music Portal">
-    <meta name="keywords" content="music, songs, artists, playlist">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta
+        name="description"
+        content="Sound Waves Music Portal"
+    >
+
+    <meta
+        name="keywords"
+        content="music, songs, artists, categories, playlist"
+    >
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        http-equiv="X-UA-Compatible"
+        content="ie=edge"
+    >
+
     <title>Sound Waves - Music Portal</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css">
-    <link rel="stylesheet" href="css/font-awesome.min.css" type="text/css">
-    <link rel="stylesheet" href="css/barfiller.css" type="text/css">
-    <link rel="stylesheet" href="css/nowfont.css" type="text/css">
-    <link rel="stylesheet" href="css/rockville.css" type="text/css">
-    <link rel="stylesheet" href="css/magnific-popup.css" type="text/css">
-    <link rel="stylesheet" href="css/owl.carousel.min.css" type="text/css">
-    <link rel="stylesheet" href="css/slicknav.min.css" type="text/css">
-    <link rel="stylesheet" href="css/style.css" type="text/css">
+
+    <!-- =====================================================
+         GOOGLE FONT
+    ====================================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =====================================================
+         BOOTSTRAP
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/bootstrap.min.css"
+        type="text/css"
+    >
+
+
+    <!-- =====================================================
+         FONT AWESOME
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/font-awesome.min.css"
+        type="text/css"
+    >
+
+
+    <!-- =====================================================
+         OTHER CSS
+    ====================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/barfiller.css"
+        type="text/css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/nowfont.css"
+        type="text/css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/rockville.css"
+        type="text/css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/magnific-popup.css"
+        type="text/css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/owl.carousel.min.css"
+        type="text/css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/slicknav.min.css"
+        type="text/css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+        type="text/css"
+    >
+
+
+    <!-- =====================================================
+         SOUND WAVES NAVBAR CSS
+    ====================================================== -->
 
     <style>
-    /* =========================================
-       HEADER NAVIGATION
-       ========================================= */
-
-    .header__nav {
-        flex: 1;
-        min-width: 0;
-        white-space: nowrap;
-    }
-
-    /* Keep ALL main navigation items on one line */
-    .header__nav > ul {
-        display: flex !important;
-        align-items: center;
-        justify-content: flex-end;
-        flex-wrap: nowrap !important;
-        white-space: nowrap;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-    }
-
-    /* Prevent navigation items from wrapping */
-    .header__nav > ul > li {
-        flex-shrink: 0 !important;
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
-    }
-
-    /* Navigation links */
-    .header__nav ul li a {
-        transition: color 0.2s ease;
-        white-space: nowrap;
-    }
-
-    .header__nav > ul > li > a {
-        white-space: nowrap;
-    }
 
 
-    /* =========================================
-       AUTH BUTTONS
-       ========================================= */
+        /* =================================================
+           HEADER
+        ================================================= */
 
-    .nav-auth-btn {
-        padding: 6px 14px !important;
-        border-radius: 4px;
-        font-size: 13px !important;
-        text-transform: uppercase;
-        font-weight: 600;
-        display: inline-block;
-        line-height: normal !important;
-        white-space: nowrap !important;
-        flex-shrink: 0 !important;
-    }
+        .header {
+
+            position: relative;
+
+            z-index: 9999;
+
+        }
 
 
-    /* =========================================
-       SIGN IN
-       ========================================= */
+        .header__menu {
 
-    .btn-signin {
-        border: 1px solid #df3079;
-        color: #ffffff !important;
-        background: transparent;
-        margin-right: 6px;
-    }
+            display: flex;
 
-    .btn-signin:hover {
-        background: #df3079;
-        color: #ffffff !important;
-    }
+            align-items: center;
+
+            width: 100%;
+
+        }
 
 
-    /* =========================================
-       REGISTER / SIGN UP
-       ========================================= */
+        /* =================================================
+           LOGO
+        ================================================= */
 
-    .btn-signup {
-        background: #df3079;
-        color: #ffffff !important;
-        border: 1px solid #df3079;
-    }
+        .soundwaves-logo {
 
-    .btn-signup:hover {
-        background: #c62568;
-        color: #ffffff !important;
-    }
+            display: inline-block;
+
+            text-decoration: none !important;
+
+        }
 
 
-    /* =========================================
-       DASHBOARD
-       ========================================= */
+        .soundwaves-logo h2 {
 
-    .btn-dashboard {
-        background: #2a2e39;
-        border: 1px solid #4a5162;
-        color: #ffffff !important;
-        margin-right: 6px;
-    }
+            margin: 0;
 
-    .btn-dashboard:hover {
-        background: #df3079;
-        border-color: #df3079;
-        color: #ffffff !important;
-    }
+            padding: 0;
 
+            color: #ffffff;
 
-    /* =========================================
-       LOGOUT
-       ========================================= */
+            font-size: 27px;
 
-    .btn-logout {
-        background: #ff3366;
-        color: #ffffff !important;
-    }
+            font-weight: 700;
 
-    .btn-logout:hover {
-        background: #ffffff;
-        color: #ff3366 !important;
-    }
+            line-height: 1;
+
+        }
 
 
-    /* =========================================
-       PAGES DROPDOWN
-       ========================================= */
+        .soundwaves-logo span {
 
-    .header__nav .dropdown {
-        white-space: normal;
-    }
+            color: #df3079;
 
-    .header__nav .dropdown li {
-        white-space: nowrap;
-    }
-
-    .header__nav .dropdown li a {
-        white-space: nowrap;
-    }
+        }
 
 
-    /* =========================================
-       RESPONSIVE DESKTOP NAVIGATION
-       ========================================= */
+        .soundwaves-logo:hover {
 
-    @media (min-width: 992px) {
+            text-decoration: none;
+
+        }
+
+
+        /* =================================================
+           NAVIGATION
+        ================================================= */
+
+        .header__nav {
+
+            flex: 1;
+
+            min-width: 0;
+
+            margin-left: 15px;
+
+        }
+
 
         .header__nav > ul {
+
+            display: flex !important;
+
+            align-items: center;
+
+            justify-content: flex-end;
+
             flex-wrap: nowrap !important;
+
+            list-style: none;
+
+            margin: 0;
+
+            padding: 0;
+
+            white-space: nowrap;
+
         }
+
 
         .header__nav > ul > li {
-            flex-shrink: 0 !important;
+
+            position: relative;
+
+            flex-shrink: 0;
+
+            white-space: nowrap;
+
+            margin: 0;
+
+            padding: 0;
+
         }
 
-    }
-
-
-    /* =========================================
-       TABLET / SMALL DESKTOP
-       Reduce spacing so everything stays inline
-       ========================================= */
-
-    @media (min-width: 992px) and (max-width: 1199px) {
 
         .header__nav > ul > li > a {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
+
+            display: block;
+
+            color: #ffffff;
+
+            white-space: nowrap;
+
+            font-size: 14px;
+
+            padding: 22px 10px;
+
+            text-decoration: none;
+
+            transition: all .25s ease;
+
+        }
+
+
+        .header__nav > ul > li > a:hover {
+
+            color: #df3079;
+
+        }
+
+
+        /* =================================================
+           ACTIVE PAGE
+        ================================================= */
+
+        .header__nav > ul > li.active > a {
+
+            color: #df3079;
+
+        }
+
+
+        /* =================================================
+           DROPDOWN
+        ================================================= */
+
+        .header__nav li.dropdown {
+
+            position: relative;
+
+        }
+
+
+        .header__nav li.dropdown > a i {
+
+            margin-left: 5px;
+
+            font-size: 10px;
+
+        }
+
+
+        .header__nav .dropdown-menu {
+
+            position: absolute;
+
+            top: 100%;
+
+            left: 0;
+
+            min-width: 210px;
+
+            max-height: 420px;
+
+            overflow-y: auto;
+
+            padding: 8px 0;
+
+            margin: 0;
+
+            background: #17121f;
+
+            border: 1px solid rgba(255,255,255,.08);
+
+            border-radius: 4px;
+
+            box-shadow: 0 10px 30px rgba(0,0,0,.4);
+
+            display: none;
+
+            z-index: 99999;
+
+        }
+
+
+        .header__nav li.dropdown:hover > .dropdown-menu {
+
+            display: block;
+
+        }
+
+
+        .header__nav .dropdown-menu li {
+
+            display: block;
+
+            width: 100%;
+
+            list-style: none;
+
+        }
+
+
+        .header__nav .dropdown-menu li a {
+
+            display: block;
+
+            padding: 9px 16px;
+
+            color: #ffffff;
+
             font-size: 13px;
+
+            text-decoration: none;
+
+            white-space: nowrap;
+
+            transition: all .2s ease;
+
         }
 
-        .nav-auth-btn {
-            padding: 5px 10px !important;
+
+        .header__nav .dropdown-menu li a:hover {
+
+            color: #ffffff;
+
+            background: #df3079;
+
+        }
+
+
+        /* =================================================
+           DROPDOWN SCROLLBAR
+        ================================================= */
+
+        .header__nav .dropdown-menu::-webkit-scrollbar {
+
+            width: 5px;
+
+        }
+
+
+        .header__nav .dropdown-menu::-webkit-scrollbar-track {
+
+            background: #17121f;
+
+        }
+
+
+        .header__nav .dropdown-menu::-webkit-scrollbar-thumb {
+
+            background: #df3079;
+
+            border-radius: 10px;
+
+        }
+
+
+        /* =================================================
+           LOGOUT BUTTON
+        ================================================= */
+
+        .nav-logout {
+
+            display: inline-flex !important;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 7px 15px !important;
+
+            margin-left: 7px;
+
+            color: #ffffff !important;
+
+            background: #df3079;
+
+            border: 1px solid #df3079;
+
+            border-radius: 4px;
+
             font-size: 12px !important;
+
+            font-weight: 700;
+
+            text-transform: uppercase;
+
+            line-height: 1.2 !important;
+
+            text-decoration: none !important;
+
+            white-space: nowrap !important;
+
+            transition: all .25s ease;
+
         }
 
-    }
-</style>
+
+        .nav-logout:hover {
+
+            color: #ffffff !important;
+
+            background: #c62568;
+
+            border-color: #c62568;
+
+            transform: translateY(-1px);
+
+        }
+
+
+        .nav-logout i {
+
+            margin-right: 6px;
+
+        }
+
+
+        /* =================================================
+           MOBILE MENU
+        ================================================= */
+
+        .header__right {
+
+            display: flex;
+
+            align-items: center;
+
+            margin-left: 10px;
+
+        }
+
+
+        .canvas__open {
+
+            color: #ffffff;
+
+            cursor: pointer;
+
+            font-size: 22px;
+
+        }
+
+
+        /* =================================================
+           LARGE DESKTOP
+        ================================================= */
+
+        @media (min-width: 1200px) {
+
+            .header__nav > ul > li > a {
+
+                padding-left: 10px;
+
+                padding-right: 10px;
+
+            }
+
+        }
+
+
+        /* =================================================
+           LAPTOP
+        ================================================= */
+
+        @media (min-width: 992px) and (max-width: 1199px) {
+
+            .header__nav {
+
+                margin-left: 3px;
+
+            }
+
+
+            .header__nav > ul > li > a {
+
+                padding-left: 5px !important;
+
+                padding-right: 5px !important;
+
+                font-size: 12px !important;
+
+            }
+
+
+            .nav-logout {
+
+                padding: 6px 9px !important;
+
+                font-size: 11px !important;
+
+            }
+
+        }
+
+
+        /* =================================================
+           TABLET / MOBILE
+        ================================================= */
+
+        @media (max-width: 991px) {
+
+            .header__nav {
+
+                display: none;
+
+            }
+
+
+            .header__right {
+
+                margin-left: auto;
+
+            }
+
+        }
+
+
+        /* =================================================
+           PRELOADER FIX
+        ================================================= */
+
+        #preloder {
+
+            display: none !important;
+
+        }
+
+
+        .loader {
+
+            display: none !important;
+
+        }
+
+    </style>
 
 </head>
+
+
 <body>
-    <div id="preloder">
-        <div class="loader"></div>
+
+
+<!-- =====================================================
+     HEADER START
+====================================================== -->
+
+<header class="<?php echo $headerClass; ?>">
+
+    <div class="container">
+
+        <div class="row align-items-center">
+
+
+            <!-- =================================================
+                 LOGO
+            ================================================== -->
+
+            <div class="col-lg-3 col-md-3 col-8">
+
+                <div class="header__logo">
+
+                    <a
+                        href="index.php"
+                        class="soundwaves-logo"
+                    >
+
+                        <h2>
+
+                            Sound
+                            <span>Waves</span>
+
+                        </h2>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 NAVIGATION
+            ================================================== -->
+
+            <div class="col-lg-9 col-md-9 col-4">
+
+                <div class="header__menu">
+
+
+                    <nav class="header__nav">
+
+                        <ul>
+
+
+                            <!-- =================================
+                                 HOME
+                            ================================== -->
+
+                            <li
+                                class="<?php
+                                    echo ($currentScript === 'index.php')
+                                        ? 'active'
+                                        : '';
+                                ?>"
+                            >
+
+                                <a href="index.php">
+
+                                    Home
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 ARTISTS - DYNAMIC
+                            ================================== -->
+
+                            <li class="dropdown">
+
+                                <a href="discography.php">
+
+                                    Artists
+
+                                    <i class="fa fa-angle-down"></i>
+
+                                </a>
+
+
+                                <ul class="dropdown-menu">
+
+
+                                    <!-- ALL ARTISTS -->
+
+                                    <li>
+
+                                        <a href="discography.php">
+
+                                            All Artists
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <?php if (
+                                        $artistsResult &&
+                                        mysqli_num_rows($artistsResult) > 0
+                                    ): ?>
+
+
+                                        <?php while (
+                                            $artist =
+                                            mysqli_fetch_assoc($artistsResult)
+                                        ): ?>
+
+                                            <li>
+
+                                                <a
+                                                    href="discography.php?artist_id=<?php
+                                                        echo (int)$artist['id'];
+                                                    ?>"
+                                                >
+
+                                                    <?php
+                                                        echo htmlspecialchars(
+                                                            $artist['artist_name'],
+                                                            ENT_QUOTES,
+                                                            'UTF-8'
+                                                        );
+                                                    ?>
+
+                                                </a>
+
+                                            </li>
+
+                                        <?php endwhile; ?>
+
+
+                                    <?php else: ?>
+
+
+                                        <li>
+
+                                            <a href="javascript:void(0);">
+
+                                                No Artists Found
+
+                                            </a>
+
+                                        </li>
+
+
+                                    <?php endif; ?>
+
+                                </ul>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 CATEGORIES - DYNAMIC
+                            ================================== -->
+
+                            <li class="dropdown">
+
+                                <a href="discography.php">
+
+                                    Categories
+
+                                    <i class="fa fa-angle-down"></i>
+
+                                </a>
+
+
+                                <ul class="dropdown-menu">
+
+
+                                    <!-- ALL CATEGORIES -->
+
+                                    <li>
+
+                                        <a href="discography.php">
+
+                                            All Categories
+
+                                        </a>
+
+                                    </li>
+
+
+                                    <?php if (
+                                        $categoriesResult &&
+                                        mysqli_num_rows($categoriesResult) > 0
+                                    ): ?>
+
+
+                                        <?php while (
+                                            $category =
+                                            mysqli_fetch_assoc($categoriesResult)
+                                        ): ?>
+
+                                            <li>
+
+                                                <a
+                                                    href="discography.php?category_id=<?php
+                                                        echo (int)$category['id'];
+                                                    ?>"
+                                                >
+
+                                                    <?php
+                                                        echo htmlspecialchars(
+                                                            $category['category_name'],
+                                                            ENT_QUOTES,
+                                                            'UTF-8'
+                                                        );
+                                                    ?>
+
+                                                </a>
+
+                                            </li>
+
+                                        <?php endwhile; ?>
+
+
+                                    <?php else: ?>
+
+
+                                        <li>
+
+                                            <a href="javascript:void(0);">
+
+                                                No Categories Found
+
+                                            </a>
+
+                                        </li>
+
+
+                                    <?php endif; ?>
+
+                                </ul>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 SONGS
+                            ================================== -->
+
+                            <li
+                                class="<?php
+                                    echo ($currentScript === 'discography.php')
+                                        ? 'active'
+                                        : '';
+                                ?>"
+                            >
+
+                                <a href="discography.php">
+
+                                    Songs
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 DISCOGRAPHY
+                            ================================== -->
+
+                            <li>
+
+                                <a href="discography.php">
+
+                                    Discography
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 VIDEOS
+                            ================================== -->
+
+                            <li
+                                class="<?php
+                                    echo ($currentScript === 'videos.php')
+                                        ? 'active'
+                                        : '';
+                                ?>"
+                            >
+
+                                <a href="videos.php">
+
+                                    Videos
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 BLOG
+                            ================================== -->
+
+                            <li
+                                class="<?php
+                                    echo ($currentScript === 'blog.php')
+                                        ? 'active'
+                                        : '';
+                                ?>"
+                            >
+
+                                <a href="blog.php">
+
+                                    Blog
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 TOURS
+                            ================================== -->
+
+                            <li
+                                class="<?php
+                                    echo ($currentScript === 'tours.php')
+                                        ? 'active'
+                                        : '';
+                                ?>"
+                            >
+
+                                <a href="tours.php">
+
+                                    Tours
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 CONTACT
+                            ================================== -->
+
+                            <li
+                                class="<?php
+                                    echo ($currentScript === 'contact.php')
+                                        ? 'active'
+                                        : '';
+                                ?>"
+                            >
+
+                                <a href="contact.php">
+
+                                    Contact
+
+                                </a>
+
+                            </li>
+
+
+                            <!-- =================================
+                                 LOGOUT
+                            ================================== -->
+
+                            <li>
+
+                                <a
+                                    href="logout.php"
+                                    class="nav-logout"
+                                >
+
+                                    <i class="fa fa-sign-out"></i>
+
+                                    Logout
+
+                                </a>
+
+                            </li>
+
+
+                        </ul>
+
+                    </nav>
+
+
+                    <!-- =========================================
+                         MOBILE MENU BUTTON
+                    ========================================== -->
+
+                    <div class="header__right">
+
+                        <div class="canvas__open">
+
+                            <i class="fa fa-bars"></i>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+
     </div>
 
-    <header class="<?php echo $headerClass; ?>">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-2 col-md-2">
-                    <div class="header__logo">
-                        <a href="index.php">
-                            <img src="img/logo.png" alt="Sound Waves">
-                        </a>
-                    </div>
-                </div>
-                <div class="col-lg-10 col-md-10">
-                    <div class="header__nav d-flex justify-content-between align-items-center">
-                        <nav class="header__menu mobile-menu">
-                            <ul>
-                                <li class="<?php echo ($currentScript === 'index.php') ? 'active' : ''; ?>">
-                                    <a href="index.php">Home</a>
-                                </li>
-                                <li class="<?php echo ($currentScript === 'discography.php') ? 'active' : ''; ?>">
-                                    <a href="discography.php">Discography</a>
-                                </li>
-                                <li class="<?php echo ($currentScript === 'about.php') ? 'active' : ''; ?>">
-                                    <a href="about.php">About</a>
-                                </li>
-                                <li class="<?php echo ($currentScript === 'tours.php') ? 'active' : ''; ?>">
-                                    <a href="tours.php">Tours</a>
-                                </li>
-                                <li class="<?php echo ($currentScript === 'videos.php') ? 'active' : ''; ?>">
-                                    <a href="videos.php">Videos</a>
-                                </li>
-                                <li class="<?php echo in_array($currentScript, ['blog.php', 'blog-details.php'], true) ? 'active' : ''; ?>">
-                                    <a href="#">Pages</a>
-                                    <ul class="dropdown">
-                                        <li><a href="blog.php">Blog</a></li>
-                                        <li><a href="blog-details.php">Blog Details</a></li>
-                                    </ul>
-                                </li>
-                                <li class="<?php echo ($currentScript === 'contact.php') ? 'active' : ''; ?>">
-                                    <a href="contact.php">Contact</a>
-                                </li>
+</header>
 
-                                <?php if (isset($_SESSION['user_id'])): ?>
-                                    <li>
-                                        <a href="dashboard/index.php" class="nav-auth-btn btn-dashboard">
-                                            <i class="fa fa-tachometer"></i> Dashboard
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="logout.php" class="nav-auth-btn btn-logout">
-                                            <i class="fa fa-sign-out"></i> Logout
-                                        </a>
-                                    </li>
-                                <?php else: ?>
-                                    <li>
-                                        <a href="dashboard/signin.php" class="nav-auth-btn btn-signin">
-                                            Sign In
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="dashboard/signup.php" class="nav-auth-btn btn-signup">
-                                            Register
-                                        </a>
-                                    </li>
-                                <?php endif; ?>
-                            </ul>
-                        </nav>
 
-                        <div class="header__right__social d-none d-xl-block">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                            <a href="#"><i class="fa fa-youtube-play"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="mobile-menu-wrap"></div>
-        </div>
-    </header>
+<!-- =====================================================
+     HEADER END
+
+     Page content yahan se start hoga
+====================================================== -->

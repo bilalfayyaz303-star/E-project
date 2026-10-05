@@ -18,7 +18,7 @@ $userRole = htmlspecialchars(ucfirst($_SESSION['user_role'] ?? 'Admin'));
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Sound Waves Dashboard</title>
+    <title>Musical Dashboard</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +33,7 @@ $userRole = htmlspecialchars(ucfirst($_SESSION['user_role'] ?? 'Admin'));
         <div class="sidebar pe-4 pb-3">
             <nav class="navbar bg-secondary navbar-dark">
                 <a href="index.php" class="navbar-brand mx-4 mb-3">
-                    <h3 class="text-primary mb-0"><i class="fa fa-music me-2"></i>Sound Waves</h3>
+                    <h3 class="text-primary mb-0"><i class="fa fa-music me-2"></i>Musical</h3>
                 </a>
                 <div class="d-flex align-items-center ms-4 mb-4">
                     <div class="position-relative">
